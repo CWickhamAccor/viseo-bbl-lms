@@ -1,5 +1,6 @@
 const logger = require('../tools/logger');
-const {lms, fallback} = require('../database/lmsDatabase');
+const { getDeepValue } = require('../tools/objectHelper');
+const { lms, fallback } = require('../database/lmsDatabase');
 
 function parse(req, res) {
     const { intent, entities } = req.body;
@@ -11,13 +12,13 @@ function parse(req, res) {
 
 function getOutputText(intent, entities) {
     let output = 'default text';
-    const resultsMatchingIntent = lms.filter((elem) => elem.intent === intent);
+    const resultsMatchingIntent = lms.filter(elem => elem.intent === intent);
     const sortedResults = getSortedResults(resultsMatchingIntent, entities);
     logger.info(`results matching intent : ${JSON.stringify(sortedResults, null, 2)}`);
-    if (sortedResults.length > 0){
+    if (sortedResults.length > 0) {
         output = sortedResults[0].output;
     } else {
-        const index = Math.round(Math.random()*fallback.length);
+        const index = Math.round(Math.random() * fallback.length);
         output = fallback[index];
     }
     return output;
@@ -35,11 +36,10 @@ function getEntitiesScore(LmsEntities, ReqEntities) {
     let score = 0;
     logger.info('lms : ', LmsEntities);
     logger.info('req : ', ReqEntities);
-    logger.info('');
-    for(const entity in ReqEntities) {
+    for (const entity in ReqEntities) {
         if (LmsEntities[entity]) {
             if (LmsEntities[entity] === '*') {
-                score ++;
+                score += 1;
                 logger.info('partial match');
             }
             if (LmsEntities[entity] === ReqEntities[entity]) {
@@ -48,6 +48,7 @@ function getEntitiesScore(LmsEntities, ReqEntities) {
             }
         }
     }
+    logger.info('');
     return score;
 }
 
