@@ -24,6 +24,30 @@ function getOutputText(intent, entities) {
     return output;
 }
 
+function getEntitiesScore(lmsEntities, reqEntities) {
+    if (!lmsEntities) return 0;
+    let score = 0;
+    logger.info('');
+    logger.info('lms : ', lmsEntities);
+    logger.info('req : ', reqEntities);
+    for (const entity in reqEntities) {
+        if (lmsEntities[entity]) {
+            if (lmsEntities[entity] === '*') {
+                score += 1;
+                logger.info('partial match');
+            } else if (Array.isArray(lmsEntities[entity]) && Array.isArray(reqEntities[entity])) {
+                reqEntities[entity].forEach((ent) => {
+                    if (lmsEntities[entity].includes(ent)) {
+                        score += 2;
+                        logger.info('full match');
+                    }
+                });
+            }
+        }
+    }
+    return score;
+}
+
 function getSortedResults(array, entities) {
     return array.map((e) => {
         e.match = getEntitiesScore(e.entities, entities);
@@ -31,27 +55,7 @@ function getSortedResults(array, entities) {
     }).sort((e1, e2) => e1.match < e2.match);
 }
 
-function getEntitiesScore(LmsEntities, ReqEntities) {
-    if (!LmsEntities) return 0;
-    let score = 0;
-    logger.info('lms : ', LmsEntities);
-    logger.info('req : ', ReqEntities);
-    for (const entity in ReqEntities) {
-        if (LmsEntities[entity]) {
-            if (LmsEntities[entity] === '*') {
-                score += 1;
-                logger.info('partial match');
-            }
-            if (LmsEntities[entity] === ReqEntities[entity]) {
-                score += 2;
-                logger.info('full match');
-            }
-        }
-    }
-    logger.info('');
-    return score;
-}
-
 module.exports = {
     parse,
+    getOutputText,
 };

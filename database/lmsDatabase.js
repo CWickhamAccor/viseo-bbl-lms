@@ -2,27 +2,32 @@ const database = {
     lms: [
         {
             intent: 'hello',
+            entities: '*',
             output: 'Hi ! I\'m IceCreamator! Can I serve you some ice cream ?',
         },
         {
-            intent: 'goodbye',
+            intent: 'goodBye',
+            entities: '*',
             output: 'See you in hell!',
         },
         {
             intent: 'iceCream',
+            entities: {
+                iceCream: ['ice cream', 'sorbet'],
+            },
             output: 'Which ice cream would you like ?',
         },
         {
             intent: 'iceCream',
             entities: {
-                iceCream: ['chocolate'],
+                iceCream: ['chocolate', 'ice cream'],
             },
             output: 'Here is a chocolate Ice cream !',
         },
         {
             intent: 'iceCream',
             entities: {
-                iceCream: ['vanilla'],
+                iceCream: ['vanilla', 'ice cream'],
             },
             output: 'Here is a vanilla Ice cream !',
         },
